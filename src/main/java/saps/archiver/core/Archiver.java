@@ -164,14 +164,12 @@ public class Archiver {
    *
    * @param task {@code SapsImage}
    */
-  private void deleteTempData(SapsImage task) {
-
-    LOGGER.info("Deleting temp data from task [" + task.getTaskId() + "]");
-
+  private void deleteTempData(SapsImage task) {    
     String taskDirPath = tempStoragePath + File.separator + task.getTaskId();
-
+    
     File taskDir = new File(taskDirPath);
     if (taskDir.exists() && taskDir.isDirectory()) {
+      LOGGER.info("Deleting temp data from task [" + task.getTaskId() + "]");
       try {
         // TODO Remove archive task from here
         if (this.executionDebugMode && task.getState().equals(ImageTaskState.FAILED)) {
@@ -181,8 +179,9 @@ public class Archiver {
       } catch (IOException e) {
         LOGGER.error("Error while delete task [" + task.getTaskId() + "] files from disk: ", e);
       }
-    } else {
-      LOGGER.error("Path " + taskDirPath + " does not exist or is not a directory!");
+    } 
+    else {
+      LOGGER.debug("Path " + taskDirPath + " does not exist or is not a directory!");
     }
   }
 
