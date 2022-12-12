@@ -180,9 +180,6 @@ public class Archiver {
         LOGGER.error("Error while delete task [" + task.getTaskId() + "] files from disk: ", e);
       }
     } 
-    else {
-      LOGGER.debug("Path " + taskDirPath + " does not exist or is not a directory!");
-    }
   }
 
   /**
