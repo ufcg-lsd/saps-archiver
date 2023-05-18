@@ -1,8 +1,8 @@
-package main.java.interfaces;
+package java.saps.archiver.interfaces;
 
 import java.io.IOException;
 
-public class PermanentStorage {
+public interface PermanentStorage {
 
     boolean archive(SapsImage task) throws IOException;
 
