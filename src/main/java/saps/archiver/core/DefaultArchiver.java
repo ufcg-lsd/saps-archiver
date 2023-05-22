@@ -1,3 +1,5 @@
+package saps.archiver.core;
+
 public class DefaultArchiver implements Archiver {
   private final Properties properties;
   private final Catalog catalog;
