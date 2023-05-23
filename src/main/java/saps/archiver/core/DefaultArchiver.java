@@ -1,20 +1,25 @@
 package saps.archiver.core;
 
+import saps.archiver.interfaces.*;
+import saps.archiver.core.exceptions.*;
+import java.util.List;
+import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Logger;
 //TODO imports missing
 
 public class DefaultArchiver implements Archiver {
   private final Properties properties;
   private final Catalog catalog;
-  private final PermanentStorage PermanentStorage;
+  private final PermanentStorage permanentStorage;
 
   private final String tempStoragePath;
 
   private final long archiverDelayPeriod;
   private final long gcDelayPeriod;
 
-  private static final Logger LOGGER = LOGGER.getLogger(Archiver.class);
+  private static final Logger LOGGER = Logger.getLogger(Archiver.class);
 
-  public Archiver(
+  public DefaultArchiver(
     Properties properties,
     Catalog catalog,
     PermanentStorage permanentStorage) throws WrongConfigurationException {
