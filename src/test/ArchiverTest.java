@@ -19,12 +19,4 @@ public class ArchiverTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
     }
-
-    @Test
-    public void deleteTempData() {
-        String taskDirPath = "/nfs/fake_task"
-
-        File file = new File(taskDirPath);
-
-    }
 }

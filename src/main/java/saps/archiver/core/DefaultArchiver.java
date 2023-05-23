@@ -1,3 +1,7 @@
+package saps.archiver.core;
+
+//TODO imports missing
+
 public class DefaultArchiver implements Archiver {
   private final Properties properties;
   private final Catalog catalog;
