@@ -2,13 +2,16 @@ package saps.archiver.core;
 
 import saps.archiver.interfaces.*;
 import saps.archiver.core.exceptions.*;
+
+import java.io.IOException;
 import java.util.List;
+
+import java.io.File;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 //TODO imports missing
 
 public class DefaultArchiver implements Archiver {
-  private final Properties properties;
   private final Catalog catalog;
   private final PermanentStorage permanentStorage;
 
@@ -24,12 +27,12 @@ public class DefaultArchiver implements Archiver {
     Catalog catalog,
     PermanentStorage permanentStorage) throws WrongConfigurationException {
 
-    if (!checkProperties(properties)
-      throw new WrongConfigurationException("Error on validate the file. Missing properties for start Saps Controller."));
+    if (!checkProperties(properties)) {
+    	throw new WrongConfigurationException("Error on validate the file. Missing properties for start Saps Controller.");
+    }
         
     this.catalog = catalog;
     this.permanentStorage = permanentStorage;
-    this.tempStoragePath = properties.getProperty(SapsPropertiesConstants.SAPS_TEMP_STORAGE_PATH);
     this.tempStoragePath = properties.getProperty(SapsPropertiesConstants.SAPS_TEMP_STORAGE_PATH);
     this.gcDelayPeriod = Long.parseLong(properties.getProperty(SapsPropertiesConstants.SAPS_EXECUTION_PERIOD_GARBAGE_COLLECTOR));
     this.archiverDelayPeriod = Long.parseLong(properties.getProperty(SapsPropertiesConstants.SAPS_EXECUTION_PERIOD_ARCHIVER));
@@ -38,7 +41,7 @@ public class DefaultArchiver implements Archiver {
 
   public void archive() {
 
-    List <SapsImage> tasksToArchive = CatalogUtils.getTask(catalog, ImageTaskState.FINISHED);
+    List <SapsImage> tasksToArchive = CatalogUtils.getTasks(catalog, ImageTaskState.FINISHED);
     for (SapsImage task: tasksToArchive) {
       updateTaskState(task, ImageTaskState.ARCHIVING);
       if (archive(task)) {
@@ -89,7 +92,7 @@ public class DefaultArchiver implements Archiver {
    * @return boolean representation reporting success (true) or failure (false) in update {@code
    *     SapsImage} state in {@code Catalog}
    */
-  private boolean updateTaskState(SapsImage task, ImageTaskState state, String status, String error, String arrebolJobId) {
+  private boolean updateTaskState(SapsImage task, ImageTaskState state) {
     task.setState(state);
     task.setStatus(SapsImage.NON_EXISTENT_DATA);
     task.setError(SapsImage.AVAILABLE);
