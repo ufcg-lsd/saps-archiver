@@ -83,12 +83,6 @@ public class DefaultPermanentStorage implements PermanentStorage {
     FileUtils.copyDirectoryToDirectory(new File(src), new File(dest));
   }
 
-
-
-  
-  public String testandoOMock(SapsImage task) {
-    return task.getTaskId();
-  }
 }
 
 
