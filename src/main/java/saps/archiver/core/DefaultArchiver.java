@@ -2,14 +2,12 @@ package saps.archiver.core;
 
 import saps.archiver.interfaces.*;
 import saps.archiver.core.exceptions.*;
-
+import java.util.MissingResourceException;
 import java.io.IOException;
 import java.util.List;
-
 import java.io.File;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
-//TODO imports missing
 
 public class DefaultArchiver implements Archiver {
   private final Catalog catalog;
@@ -25,7 +23,7 @@ public class DefaultArchiver implements Archiver {
   public DefaultArchiver(
     Properties properties,
     Catalog catalog,
-    PermanentStorage permanentStorage) throws WrongConfigurationException {
+    PermanentStorage permanentStorage) throws MissingResourceException {
 
     if (!checkProperties(properties)) {
     	throw new WrongConfigurationException("Error on validate the file. Missing properties for start Saps Controller.");
@@ -38,21 +36,23 @@ public class DefaultArchiver implements Archiver {
     this.archiverDelayPeriod = Long.parseLong(properties.getProperty(SapsPropertiesConstants.SAPS_EXECUTION_PERIOD_ARCHIVER));
   }
 
-
   public void archive() {
 
     List <SapsImage> tasksToArchive = CatalogUtils.getTasks(catalog, ImageTaskState.FINISHED);
+
     for (SapsImage task: tasksToArchive) {
       updateTaskState(task, ImageTaskState.ARCHIVING);
       if (archive(task)) {
         updateTaskState(task, ImageTaskState.ARCHIVED); 
       } else {
         updateTaskState(task, ImageTaskState.FAILED);
-      } deleteTempData(task);
+      } 
+      deleteTempData(task);
     } 
   }
 
   private boolean archive(SapsImage task) {
+
     try {
       permanentStorage.archive(task);
       return true;
@@ -69,13 +69,11 @@ public class DefaultArchiver implements Archiver {
   };
 
   private boolean checkProperties(Properties properties) {
+
     String[] propertiesSet = {
-      SapsPropertiesConstants.IMAGE_DATASTORE_IP,
-      SapsPropertiesConstants.IMAGE_DATASTORE_PORT,
       SapsPropertiesConstants.SAPS_EXECUTION_PERIOD_GARBAGE_COLLECTOR,
       SapsPropertiesConstants.SAPS_EXECUTION_PERIOD_ARCHIVER,
-      SapsPropertiesConstants.SAPS_TEMP_STORAGE_PATH,
-      SapsPropertiesConstants.SAPS_PERMANENT_STORAGE_TYPE
+      SapsPropertiesConstants.SAPS_TEMP_STORAGE_PATH
   };
 
   return SapsPropertiesUtil.checkProperties(properties, propertiesSet);
@@ -93,6 +91,7 @@ public class DefaultArchiver implements Archiver {
    *     SapsImage} state in {@code Catalog}
    */
   private boolean updateTaskState(SapsImage task, ImageTaskState state) {
+
     task.setState(state);
     task.setStatus(SapsImage.NON_EXISTENT_DATA);
     task.setError(SapsImage.AVAILABLE);
@@ -109,24 +108,12 @@ public class DefaultArchiver implements Archiver {
    * @param task {@code SapsImage}
    */
   private void deleteTempData(SapsImage task) {    
+
     String taskDirPath = tempStoragePath + File.separator + task.getTaskId();
     
     File taskDir = new File(taskDirPath);
-    if (taskDir.exists() && taskDir.isDirectory()) {
       LOGGER.info("Deleting temp data from task [" + task.getTaskId() + "]");
-      try {
-        FileUtils.deleteDirectory(taskDir);
-      } catch (IOException e) {
-        LOGGER.error("Error while delete task [" + task.getTaskId() + "] files from disk: ", e);
-      }
-    } 
-  }
-
-  /**
-   * It returns the maximum value between garbage collector and archiver delay constants
-   */
-  public long getDelayMilis() {
-    return Math.max(this.archiverDelayPeriod, this.gcDelayPeriod);
+      FileUtils.deleteQuietly(taskDir);
   }
 
 }
