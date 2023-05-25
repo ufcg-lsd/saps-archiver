@@ -1,7 +1,6 @@
 package saps.archiver.core;
 
 import saps.archiver.interfaces.*;
-import saps.archiver.core.exceptions.*;
 import java.util.MissingResourceException;
 import java.io.IOException;
 import java.util.List;
@@ -13,10 +12,7 @@ public class DefaultArchiver implements Archiver {
   private final Catalog catalog;
   private final PermanentStorage permanentStorage;
 
-  private final String tempStoragePath;
-
-  private final long archiverDelayPeriod;
-  private final long gcDelayPeriod;
+  private final String tempStoragePat
 
   private static final Logger LOGGER = Logger.getLogger(Archiver.class);
 
@@ -26,14 +22,12 @@ public class DefaultArchiver implements Archiver {
     PermanentStorage permanentStorage) throws MissingResourceException {
 
     if (!checkProperties(properties)) {
-    	throw new WrongConfigurationException("Error on validate the file. Missing properties for start Saps Controller.");
+    	throw new MissingResourceException("Error on validate the file. Missing properties for start Saps Controller.");
     }
         
     this.catalog = catalog;
     this.permanentStorage = permanentStorage;
     this.tempStoragePath = properties.getProperty(SapsPropertiesConstants.SAPS_TEMP_STORAGE_PATH);
-    this.gcDelayPeriod = Long.parseLong(properties.getProperty(SapsPropertiesConstants.SAPS_EXECUTION_PERIOD_GARBAGE_COLLECTOR));
-    this.archiverDelayPeriod = Long.parseLong(properties.getProperty(SapsPropertiesConstants.SAPS_EXECUTION_PERIOD_ARCHIVER));
   }
 
   public void archive() {
