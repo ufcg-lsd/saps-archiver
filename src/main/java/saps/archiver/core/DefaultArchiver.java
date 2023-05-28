@@ -1,7 +1,6 @@
 package saps.archiver.core;
 
 import saps.archiver.interfaces.*;
-import java.util.MissingResourceException;
 import java.io.IOException;
 import java.util.List;
 import java.io.File;
@@ -12,7 +11,7 @@ public class DefaultArchiver implements Archiver {
   private final Catalog catalog;
   private final PermanentStorage permanentStorage;
 
-  private final String tempStoragePat
+  private final String tempStoragePath;
 
   private static final Logger LOGGER = Logger.getLogger(Archiver.class);
 
@@ -22,7 +21,7 @@ public class DefaultArchiver implements Archiver {
     PermanentStorage permanentStorage) throws MissingResourceException {
 
     if (!checkProperties(properties)) {
-    	throw new MissingResourceException("Error on validate the file. Missing properties for start Saps Controller.");
+    	throw new IllegalArgumentException("Error on validate the file. Missing properties for start Saps Controller.");
     }
         
     this.catalog = catalog;
