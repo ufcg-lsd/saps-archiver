@@ -1,13 +1,8 @@
 package saps.archiver.core;
 
-import java.lang.math.max;
+import saps.archiver.interfaces.*;
 import java.io.FileInputStream;
 import java.util.Properties;
-import saps.catalog.core.Catalog;
-import saps.catalog.core.jdbc.JDBCCatalog;
-import saps.common.core.storage.PermanentStorage;
-import saps.common.core.storage.nfs.FSPermanentStorage;
-import saps.common.utils.SapsPropertiesConstants;
 
 public class ArchiverMain {
 
@@ -37,9 +32,7 @@ public class ArchiverMain {
     }
 
     private static PermanentStorage createPermanentStorage(Properties properties) throws Exception {
-
-        String permanentStorageType = properties.getProperty(SapsPropertiesConstants.SAPS_PERMANENT_STORAGE_TYPE);
-        return new NfsPermanentStorage(properties);
+        return new DefaultPermanentStorage(properties);
   }
 
 }

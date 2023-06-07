@@ -24,6 +24,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import saps.archiver.interfaces.*;
+
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({CatalogUtils.class})
 public class DefaultArchiverTest {

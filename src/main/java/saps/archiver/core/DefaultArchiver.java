@@ -1,8 +1,10 @@
 package saps.archiver.core;
 
 import saps.archiver.interfaces.*;
+import java.util.Properties;
 import java.io.IOException;
 import java.util.List;
+import java.util.ArrayList;
 import java.io.File;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
@@ -18,30 +20,33 @@ public class DefaultArchiver implements Archiver {
   public DefaultArchiver(
     Properties properties,
     Catalog catalog,
-    PermanentStorage permanentStorage) throws MissingResourceException {
+    PermanentStorage permanentStorage) throws IllegalArgumentException {
 
     if (!checkProperties(properties)) {
     	throw new IllegalArgumentException("Error on validate the file. Missing properties for start Saps Controller.");
     }
-        
+ 
     this.catalog = catalog;
     this.permanentStorage = permanentStorage;
     this.tempStoragePath = properties.getProperty(SapsPropertiesConstants.SAPS_TEMP_STORAGE_PATH);
   }
 
-  public void archive() {
-
+  public List<SapsImage> archive() {
+	  
     List <SapsImage> tasksToArchive = CatalogUtils.getTasks(catalog, ImageTaskState.FINISHED);
+    List<SapsImage> archivedTasks = new ArrayList<>();
 
     for (SapsImage task: tasksToArchive) {
       updateTaskState(task, ImageTaskState.ARCHIVING);
       if (archive(task)) {
         updateTaskState(task, ImageTaskState.ARCHIVED); 
+        archivedTasks.add(task);
       } else {
         updateTaskState(task, ImageTaskState.FAILED);
       } 
       deleteTempData(task);
-    } 
+    }
+    return tasksToArchive;
   }
 
   private boolean archive(SapsImage task) {
@@ -55,10 +60,12 @@ public class DefaultArchiver implements Archiver {
     }
   }
 
-  public void gc() {
+  public List<SapsImage> gc() {
 
     List<SapsImage> failedTasks = CatalogUtils.getTasks(catalog, ImageTaskState.FAILED);
     failedTasks.forEach(this::deleteTempData);
+    
+    return failedTasks;
   };
 
   private boolean checkProperties(Properties properties) {
@@ -83,7 +90,7 @@ public class DefaultArchiver implements Archiver {
    * @return boolean representation reporting success (true) or failure (false) in update {@code
    *     SapsImage} state in {@code Catalog}
    */
-  private boolean updateTaskState(SapsImage task, ImageTaskState state) {
+  private void updateTaskState(SapsImage task, ImageTaskState state) {
 
     task.setState(state);
     task.setStatus(SapsImage.NON_EXISTENT_DATA);
@@ -92,7 +99,7 @@ public class DefaultArchiver implements Archiver {
 
     CatalogUtils.addTimestampTask(catalog, task);
 
-    return CatalogUtils.updateState(catalog, task);
+    CatalogUtils.updateState(catalog, task);
   }
 
   /**
@@ -108,5 +115,6 @@ public class DefaultArchiver implements Archiver {
       LOGGER.info("Deleting temp data from task [" + task.getTaskId() + "]");
       FileUtils.deleteQuietly(taskDir);
   }
+
 
 }
