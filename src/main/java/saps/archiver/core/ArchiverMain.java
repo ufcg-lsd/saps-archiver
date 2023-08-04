@@ -3,6 +3,9 @@ package saps.archiver.core;
 import saps.archiver.interfaces.*;
 import java.io.FileInputStream;
 import java.util.Properties;
+import saps.catalog.core.Catalog;
+import saps.catalog.core.jdbc.JDBCCatalog;
+import saps.common.utils.SapsPropertiesConstants;
 
 public class ArchiverMain {
 
@@ -32,7 +35,7 @@ public class ArchiverMain {
     }
 
     private static PermanentStorage createPermanentStorage(Properties properties) throws Exception {
-        return new DefaultPermanentStorage(properties);
+        return new FSPermanentStorage(properties);
   }
 
 }

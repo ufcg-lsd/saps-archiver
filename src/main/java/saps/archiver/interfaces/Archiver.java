@@ -1,6 +1,7 @@
 package saps.archiver.interfaces;
 
 import java.util.Collection;
+import saps.common.core.model.SapsImage;
 
 
 public interface Archiver {
