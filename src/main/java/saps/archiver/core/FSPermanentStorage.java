@@ -8,13 +8,17 @@ import static saps.common.core.storage.PermanentStorageConstants.SAPS_TASK_STAGE
 
 import java.io.File;
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Properties;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import saps.common.core.model.SapsImage;
 import saps.archiver.interfaces.PermanentStorage;
+import saps.common.core.storage.AccessLink;
 import saps.common.core.storage.exceptions.InvalidPropertyException;
 import saps.common.utils.SapsPropertiesConstants;
+
 
 public class FSPermanentStorage implements PermanentStorage {
 
@@ -25,11 +29,13 @@ public class FSPermanentStorage implements PermanentStorage {
   private final String FSTempStoragePath;
   private final String FSPermanentStoragePath;
   private final String tasksDirName;
+  private final String baseUrl;
 
   public FSPermanentStorage(Properties properties) throws InvalidPropertyException {
     this.FSTempStoragePath = properties.getProperty(SapsPropertiesConstants.SAPS_TEMP_STORAGE_PATH);
     this.FSPermanentStoragePath = properties.getProperty(SapsPropertiesConstants.FS_PERMANENT_STORAGE_PATH);
-    this.tasksDirName = properties.getProperty(SapsPropertiesConstants.PERMANENT_STORAGE_TASKS_DIR); 
+    this.tasksDirName = properties.getProperty(SapsPropertiesConstants.PERMANENT_STORAGE_TASKS_DIR);
+    this.baseUrl = properties.getProperty(SapsPropertiesConstants.PERMANENT_STORAGE_BASE_URL); 
   }
 
   @Override
@@ -40,6 +46,29 @@ public class FSPermanentStorage implements PermanentStorage {
     FileUtils.deleteDirectory(taskDir);
     
     return taskId;
+  }
+
+  //TODO CHECK METHOD FOR DISPATCHER (WAITING FOR MANEL)
+  @Override
+  public List<AccessLink> generateAccessLinks(SapsImage task) {
+    String taskId = task.getTaskId();
+    List<AccessLink> taskDataLinks = new LinkedList<>();
+
+    String dirAccessLink = String.format(FS_STORAGE_TASK_URL_PATTERN, this.baseUrl, taskId);
+
+    // TODO check dirs
+    AccessLink inputDownloadingDirAccessLink =
+        new AccessLink(INPUTDOWNLOADING_DIR, dirAccessLink + File.separator + INPUTDOWNLOADING_DIR);
+    AccessLink preprocessingDirAccessLink =
+        new AccessLink(PREPROCESSING_DIR, dirAccessLink + File.separator + PREPROCESSING_DIR);
+    AccessLink processingDirAccessLink =
+        new AccessLink(PROCESSING_DIR, dirAccessLink + File.separator + PROCESSING_DIR);
+
+    taskDataLinks.add(inputDownloadingDirAccessLink);
+    taskDataLinks.add(preprocessingDirAccessLink);
+    taskDataLinks.add(processingDirAccessLink);
+
+    return taskDataLinks;
   }
 
   @Override
