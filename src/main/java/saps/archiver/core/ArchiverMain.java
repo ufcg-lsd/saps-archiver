@@ -7,7 +7,7 @@ import saps.catalog.core.Catalog;
 import saps.catalog.core.jdbc.JDBCCatalog;
 import saps.common.utils.SapsPropertiesConstants;
 
-public class ArchiverMain {
+public class ArchiverMain { 
 
     public static void main(String[] args) throws Exception {
 
@@ -22,8 +22,9 @@ public class ArchiverMain {
 
         while (true) {
             archiver.gc();
+            Thread.sleep(5000);
             archiver.archive();
-            Thread.sleep(Math.max(gcDelayPeriod, archiverDelayPeriod));
+            Thread.sleep(5000);
         }
     }
 

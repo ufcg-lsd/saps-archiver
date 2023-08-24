@@ -7,6 +7,7 @@ import static saps.common.core.storage.PermanentStorageConstants.PROCESSING_DIR;
 import static saps.common.core.storage.PermanentStorageConstants.SAPS_TASK_STAGE_DIR_PATTERN;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
@@ -81,7 +82,11 @@ public class FSPermanentStorage implements PermanentStorage {
 
       for (String dir : dirsToCopy) {
           String localDir = String.format(SAPS_TASK_STAGE_DIR_PATTERN, FSTempStoragePath, taskId, dir);
-          copyDirToDir(localDir, FSTaskDirPath);
+          try {
+            copyDirToDir(localDir, FSTaskDirPath);
+          } catch (FileNotFoundException e) {
+            LOGGER.error("Unable to copy dir, because it was not found");
+          }
       }
       return true;
   }
@@ -93,7 +98,14 @@ public class FSPermanentStorage implements PermanentStorage {
   }
 
   private void copyDirToDir(String src, String dest) throws IOException {
+    File srcDir = new File(src);
+    File destDir = new File(dest);
+    
+    if (!srcDir.exists() || !destDir.exists()) {  
+      throw new FileNotFoundException("The fs storage directory was not found");
+    }
+
     LOGGER.debug("Copying [" + src + "] into [" + dest + "]");
-    FileUtils.copyDirectoryToDirectory(new File(src), new File(dest));
+    FileUtils.copyDirectoryToDirectory(srcDir, destDir);
   }
 }
