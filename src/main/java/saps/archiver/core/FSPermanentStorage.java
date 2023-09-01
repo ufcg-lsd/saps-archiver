@@ -49,15 +49,12 @@ public class FSPermanentStorage implements PermanentStorage {
     return taskId;
   }
 
-  //TODO CHECK METHOD FOR DISPATCHER (WAITING FOR MANEL)
   @Override
   public List<AccessLink> generateAccessLinks(SapsImage task) {
     String taskId = task.getTaskId();
     List<AccessLink> taskDataLinks = new LinkedList<>();
 
     String dirAccessLink = String.format(FS_STORAGE_TASK_URL_PATTERN, this.baseUrl, taskId);
-
-    // TODO check dirs
     AccessLink inputDownloadingDirAccessLink =
         new AccessLink(INPUTDOWNLOADING_DIR, dirAccessLink + File.separator + INPUTDOWNLOADING_DIR);
     AccessLink preprocessingDirAccessLink =

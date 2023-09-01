@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.util.Properties;
 import saps.catalog.core.Catalog;
 import saps.catalog.core.jdbc.JDBCCatalog;
-import saps.common.utils.SapsPropertiesConstants;
 
 public class ArchiverMain { 
 
@@ -16,9 +15,6 @@ public class ArchiverMain {
         properties.load(input);
 
         Archiver archiver = createArchiver(properties);
-
-        long gcDelayPeriod = Long.parseLong(properties.getProperty(SapsPropertiesConstants.SAPS_EXECUTION_PERIOD_GARBAGE_COLLECTOR));
-        long archiverDelayPeriod = Long.parseLong(properties.getProperty(SapsPropertiesConstants.SAPS_EXECUTION_PERIOD_ARCHIVER));
 
         while (true) {
             archiver.gc();
