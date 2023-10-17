@@ -122,6 +122,4 @@ public class DefaultArchiver implements Archiver {
       LOGGER.info("Deleting temp data from task [" + task.getTaskId() + "]");
       FileUtils.deleteQuietly(taskDir);
   }
-
-
 }
