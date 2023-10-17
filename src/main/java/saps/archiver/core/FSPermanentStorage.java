@@ -1,4 +1,3 @@
-/* (C)2020 */
 package saps.archiver.core;
 
 import static saps.common.core.storage.PermanentStorageConstants.INPUTDOWNLOADING_DIR;
@@ -18,7 +17,6 @@ import saps.archiver.interfaces.PermanentStorage;
 import saps.common.core.storage.AccessLink;
 import saps.common.core.storage.exceptions.InvalidPropertyException;
 import saps.common.utils.SapsPropertiesConstants;
-
 
 public class FSPermanentStorage implements PermanentStorage {
 
@@ -48,7 +46,6 @@ public class FSPermanentStorage implements PermanentStorage {
     return taskId;
   }
 
-  //TODO CHECK METHOD FOR DISPATCHER (WAITING FOR MANEL)
   @Override
   public List<AccessLink> generateAccessLinks(SapsImage task) {
     String taskId = task.getTaskId();
